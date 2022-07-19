@@ -42,7 +42,7 @@ namespace la_mia_pizzeria_static.Controllers
         // POST: HomeController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Pizza pizza)
+        public IActionResult Create(Pizza pizza)
         {
             if (!ModelState.IsValid)
             {

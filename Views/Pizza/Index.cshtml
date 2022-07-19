@@ -35,7 +35,11 @@
                         </div>
               
                         <div class="card-footer text-muted">
-                            <a asp-controller="Pizza", asp-action="Update", asp-route-id="@pizza.Id"  class="btn btn-danger">Modifica</a>
+                            <a asp-controller="Pizza" asp-action="Update" asp-route-id="@pizza.Id"  class="btn btn-primary">Modifica</a>
+                            <form asp-controller="Pizza" asp-action="Delete" asp-route-id="@pizza.Id" method="post">
+                                 @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger">Cancella</button>
+                            </form>
                         </div>
                     </div>
                 }
