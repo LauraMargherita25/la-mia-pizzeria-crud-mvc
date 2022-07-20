@@ -1,5 +1,6 @@
 ﻿using la_mia_pizzeria_static.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace la_mia_pizzeria_static.Controllers
@@ -16,7 +17,7 @@ namespace la_mia_pizzeria_static.Controllers
         public IActionResult Index()
         {
             PizzeriaContext context = new PizzeriaContext();
-            return View(context.Pizze.ToList());
+            return View(context.Pizze.Include(p => p.Category).ToList());
         }
 
         public IActionResult Detail(int id)
@@ -36,21 +37,30 @@ namespace la_mia_pizzeria_static.Controllers
         // GET: HomeController/Create
         public ActionResult Create()
         {
-            return View();
+            using(PizzeriaContext ctx = new PizzeriaContext())
+            {
+                List<Category> categories = ctx.Categories.ToList();
+                PizzaCategories model = new PizzaCategories();
+                model.Categories = categories;
+                model.Pizza = new Pizza();
+                return View(model);
+            }
         }
 
         // POST: HomeController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Pizza pizza)
+        public IActionResult Create(PizzaCategories pizzaData)
         {
             if (!ModelState.IsValid)
             {
-                return View("Create", pizza);
+                
+                pizzaData.Categories = new PizzeriaContext().Categories.ToList();
+                return View("Create", pizzaData);
             }
 
             PizzeriaContext context = new PizzeriaContext();
-            context.Pizze.Add(pizza);
+            context.Pizze.Add(pizzaData.Pizza);
             context.SaveChanges();
 
             return RedirectToAction("Index");

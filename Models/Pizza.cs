@@ -19,7 +19,7 @@ namespace la_mia_pizzeria_static.Models
         public string? Img { get; set; }
 
         [Required(ErrorMessage = "Il campo è obbligatorio")]
-        public int Price { get; set; }
+        public decimal Price { get; set; }
 
         public int? CategoryId { get; set; }
         public Category? Category { get; set; }
@@ -28,7 +28,7 @@ namespace la_mia_pizzeria_static.Models
         {
            
         }
-        public Pizza(int id, string name, string description, string img, int price)
+        public Pizza(int id, string name, string description, string img, decimal price)
         {
             Id = id;
             Name = name;
