@@ -23,10 +23,10 @@ namespace la_mia_pizzeria_static.Controllers
         public IActionResult Detail(int id)
         {
             PizzeriaContext context = new PizzeriaContext();
-            Pizza pizza = context.Pizze.Where(pizza => pizza.Id == id).FirstOrDefault();
+            Pizza pizza = context.Pizze.Where(pizza => pizza.Id == id).Include(p => p.Category).FirstOrDefault();
             if (pizza == null)
             {
-                return NotFound("Neesun prodotto con questo id");
+                return NotFound("Nesun prodotto con questo id");
             }
             else
             {
@@ -77,31 +77,39 @@ namespace la_mia_pizzeria_static.Controllers
             }
             else
             {
-                return View(pizza);
+                PizzaCategories model = new PizzaCategories();
+                model.Pizza = pizza;
+                model.Categories = ctx.Categories.ToList();
+                return View(model);
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Update(int id, Pizza pizza)
+        public IActionResult Update(int id, PizzaCategories pizzaData)
         {
-            if (!ModelState.IsValid)
+            using (PizzeriaContext ctx = new PizzeriaContext())
             {
-                return View(pizza);
-            }
-            PizzeriaContext ctx = new PizzeriaContext();
-            Pizza editPizza = (from p in ctx.Pizze where p.Id == id select p).FirstOrDefault();
-            if (editPizza == null)
-            {
-                return NotFound();
-            }
+                if (!ModelState.IsValid)
+                {
+                    pizzaData.Categories = ctx.Categories.ToList();
+                    return View(pizzaData);
+                }
 
-            editPizza.Name = pizza.Name;
-            editPizza.Description = pizza.Description;
-            editPizza.Img = pizza.Img;
-            editPizza.Price = pizza.Price;
-            ctx.SaveChanges();
-            return RedirectToAction("Index");
+                Pizza pizza = (from p in ctx.Pizze where p.Id == id select p).FirstOrDefault();
+                if (pizza == null)
+                {
+                    return NotFound();
+                }
+
+                pizza.Name = pizzaData.Pizza.Name;
+                pizza.Description = pizzaData.Pizza.Description;
+                pizza.Img = pizzaData.Pizza.Img;
+                pizza.Price = pizzaData.Pizza.Price;
+                pizza.CategoryId = pizzaData.Pizza.CategoryId;
+                ctx.SaveChanges();
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpPost]
