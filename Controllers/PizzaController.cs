@@ -1,5 +1,6 @@
 ﻿using la_mia_pizzeria_static.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
@@ -40,8 +41,17 @@ namespace la_mia_pizzeria_static.Controllers
             using(PizzeriaContext ctx = new PizzeriaContext())
             {
                 List<Category> categories = ctx.Categories.ToList();
+
+                List<SelectListItem> ingredientsList = new List<SelectListItem>();
+                List<Ingredient> ingredients = ctx.Ingredients.ToList();
+                foreach (Ingredient i in ingredients)
+                {
+                    ingredientsList.Add( new SelectListItem() { Text = i.Name, Value = i.Id.ToString() });
+                }   
+                
                 PizzaCategories model = new PizzaCategories();
                 model.Categories = categories;
+                model.Ingredients = ingredientsList;
                 model.Pizza = new Pizza();
                 return View(model);
             }
@@ -56,6 +66,14 @@ namespace la_mia_pizzeria_static.Controllers
             {
                 
                 pizzaData.Categories = new PizzeriaContext().Categories.ToList();
+
+                pizzaData.Ingredients = new List<SelectListItem>();
+                List<Ingredient> ingredients = new PizzeriaContext().Ingredients.ToList();
+                foreach (Ingredient i in ingredients)
+                {
+                    pizzaData.Ingredients.Add(new SelectListItem() { Text = i.Name, Value = i.Id.ToString() });
+                }
+
                 return View("Create", pizzaData);
             }
 
