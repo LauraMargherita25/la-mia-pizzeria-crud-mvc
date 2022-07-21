@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace la_mia_pizzeria_static.Models
 {
-    [Table("category")]
+    [Table("categories")]
     public class Category
     {
         [Key]
